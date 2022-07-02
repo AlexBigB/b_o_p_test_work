@@ -17,29 +17,27 @@ Console.Clear();
 Console.WriteLine("Вас приветствует Мастер решения контрольной задачи!");
 Console.WriteLine();
 
-bool ChooseFeelWay()
+// Этот метод спрашивает пользователя о чем-то, а затем считывает значение нажатой пользователем кнопки.
+bool YesOrNo(string question)
 {
-    bool way = true;
+    bool res = true; // if 'Y' then true
     bool correctKey = false;
     while (correctKey != true)
     {
-        Console.Write("Задать массив слов автоматически? y/n ");
+        Console.Write(question);
         ConsoleKeyInfo cki;
         cki = Console.ReadKey();
-        if (cki.Key.ToString() == "Y")
+        if (cki.Key.ToString() == "Y" || cki.Key.ToString() == "N")
         {
-            correctKey = true;
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine("Отлично! Приступаю к созданию массива...");
-        }
-        else if (cki.Key.ToString() == "N")
-        {
-            correctKey = true;
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.Write("Отлично! Введите массив слов через пробел: ");
-            way = false;
+            if (cki.Key.ToString() == "Y")
+            {
+                correctKey = true;
+            }
+            else if (cki.Key.ToString() == "N")
+            {
+                correctKey = true;
+                res = false;
+            }
         }
         else
         {
@@ -48,11 +46,14 @@ bool ChooseFeelWay()
             Console.WriteLine("Простите, я Вас не понял. Давайте попробуем ещё раз!");
         }
     }
-    return way;
+    return res;
 }
 
 string[] AiCreateArray()
 {
+    Console.WriteLine();
+    Console.WriteLine();
+    Console.WriteLine("Отлично! Приступаю к созданию массива...");
     Console.WriteLine();
     Console.Write("Сколько слов будет в массиве? ");
     int len = int.Parse(Console.ReadLine());
@@ -62,42 +63,125 @@ string[] AiCreateArray()
 
 string[] AiFeelArray(string[] stringArray)
 {
-    char[] letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-    Random rand = new Random();
-    for (int i = 0; i < stringArray.Length; i++)
+    if (stringArray.Length > 0)
     {
-        string tmpWord = "";
-        for (int j = 0; j < rand.Next(1, 10); j++)
+        char[] letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+        Random rand = new Random();
+        for (int i = 0; i < stringArray.Length; i++)
         {
-            int lettersNum = rand.Next(0, letters.Length - 1);
-            tmpWord += letters[lettersNum];
+            string tmpWord = "";
+            for (int j = 0; j < rand.Next(1, 10); j++)
+            {
+                int lettersNum = rand.Next(0, letters.Length - 1);
+                tmpWord += letters[lettersNum];
+            }
+            stringArray[i] = tmpWord;
         }
-        stringArray[i] = tmpWord;
+        Console.WriteLine();
+        Console.Write($"Готово! Вот массив слов: ");
+        Console.WriteLine($"[ {string.Join(", ", stringArray)} ]");
+        Console.WriteLine();
+        Console.WriteLine($"Никто не говорил, что это будут человеческие слова...");
     }
     return stringArray;
 }
 
 string[] ManualyCreateArray()
 {
+    Console.WriteLine();
+    Console.WriteLine();
+    Console.Write("Отлично! Введите массив слов через пробел: ");
     string[] stringArray = Console.ReadLine().Split().ToArray();
     // исключение пустой массив
     return stringArray;
 }
 
-
-
-
-string[] inputArray = new string[0];
-
-if (ChooseFeelWay() == true)
+int CountShortWords(string[] stringArray)
 {
-    inputArray = AiCreateArray();
-    inputArray = AiFeelArray(inputArray);
-    Console.WriteLine();
-    Console.Write($"Готово! Вот массив слов: ");
-    Console.WriteLine($"[ {string.Join(", ", inputArray)} ]");
-    Console.WriteLine();
-    Console.WriteLine($"Никто не говорил, что это будут человеческие слова...");
+    int count = 0;
+    for (int i = 0; i < stringArray.Length; i++)
+    {
+        if (stringArray[i].Length < 4) { count++; }
+    }
+    return count;
 }
-else { inputArray = ManualyCreateArray(); }
 
+void FeelOutputArray(string[] inArr, string[] outArr)
+{
+    int count = 0;
+    for (int i = 0; i < inArr.Length; i++)
+    {
+        if (inArr[i].Length < 4) { outArr[count++] = inArr[i]; }
+    }
+}
+
+
+// ________________________________________________________________________
+bool endOfProgramm = false;
+while (endOfProgramm != true)
+{
+    string[] inputArray = new string[0];
+    bool feelWay = YesOrNo(question: "Задать массив слов автоматически? y/n ");
+    if (feelWay == true)
+    {
+        inputArray = AiCreateArray();
+        inputArray = AiFeelArray(inputArray);
+    }
+    else { inputArray = ManualyCreateArray(); }
+
+    if (inputArray.Length > 0)
+    {
+        int amount = CountShortWords(inputArray);  // количество коротких cлов в исходном массиве
+        if (amount > 0)
+        {
+            string[] outputArray = new string[amount];
+            FeelOutputArray(inputArray, outputArray);
+            Console.WriteLine();
+            string result = $"[ {string.Join(", ", outputArray)} ]"; // на практикуме за сохранения ответа в строку обещали плюс в карму!)))ё
+            Console.WriteLine($"Вот итоговый массив: {result} ");
+            Console.WriteLine();
+            Console.WriteLine("Задача решена!");
+            Console.WriteLine();
+            Console.WriteLine("С Вами приятно было иметь дело!");
+            Console.WriteLine();
+            Console.WriteLine("Всего хорошего!");
+            endOfProgramm = true;
+        }
+        else
+        {
+            Console.WriteLine();
+            Console.WriteLine("К сожалению, в этом массиве нет слов, длина которых меньше либо равна 3 символам. :(");
+            Console.WriteLine();
+            bool tryAgain = YesOrNo(question: "Хотите попробовать еще раз? y/n ");
+            if (tryAgain == false)
+            {
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine("Очень жаль!");
+                Console.WriteLine();
+                Console.WriteLine("С Вами приятно было иметь дело!");
+                Console.WriteLine();
+                Console.WriteLine("Всего хорошего!");
+                endOfProgramm = true;
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine("Отлично! Давайте попробуем ещё раз!");
+                Thread.Sleep(2000);
+                Console.Clear();
+            }
+
+        }
+
+    }
+    else
+    {
+        Console.WriteLine();
+        Console.WriteLine("У меня нет слов! ;)");
+        Console.WriteLine();
+        Console.WriteLine("Давайте попробуем ещё раз!");
+        Thread.Sleep(2000);
+        Console.Clear();
+    }
+}
