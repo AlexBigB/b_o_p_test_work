@@ -103,7 +103,6 @@ string[] ManualyCreateArray()
     Console.Write("Введите массив слов через пробел: ");
     string[] stringArray = new string[0];
     stringArray = Console.ReadLine().Split().ToArray();
-    Console.WriteLine($"{stringArray.Length}");
     return stringArray;
 }
 
